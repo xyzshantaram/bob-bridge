@@ -56,7 +56,7 @@ client.on("ctcp_action", async (payload) => {
 })
 
 client.on("connected", async () => {
-    client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD]);
+    console.log(client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD]));
     await bot.helpers.sendMessage(CHANNEL_ID, {
         content: "Bridge connected to IRC."
     })
