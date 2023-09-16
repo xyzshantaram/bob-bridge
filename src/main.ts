@@ -63,7 +63,9 @@ client.on("raw:rpl_saslsuccess", async () => {
 });
 
 client.on("raw", (payload) => {
-    console.log(payload.source?.name, payload.command, payload.params);
+    if (config.LOG_ALL_MESSAGES) {
+        console.log(payload.source?.name, payload.command, payload.params);
+    }
 })
 
 client.on("join", async (payload) => {
