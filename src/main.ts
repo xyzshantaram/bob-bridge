@@ -140,9 +140,18 @@ bot.events.messageCreate = async (bot, msg) => {
         }
 
         const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
-        let prelude = `<${member.user?.username || 'UnknownUser'}>`;
-        if (quoteContent) prelude += ` [> ${truncate(quoteContent, 20)}]`;
-        client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
+        if (msg.content?.trim()) {
+            let prelude = `<${member.user?.username || 'UnknownUser'}>`;
+            if (quoteContent) prelude += ` [> ${truncate(quoteContent, 20)}]`;
+            client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
+        }
+        if (msg.attachments) {
+            let timeout = 0;
+            msg.attachments.forEach(attachment => {
+                setTimeout(() => client.privmsg(config.IRC_CHANNEL, `${member.user?.username} sent ${attachment.url}`), timeout);
+                timeout += 400;
+            })
+        }
     }
 }
 
