@@ -40,7 +40,7 @@ client.on("privmsg:channel", async (payload) => {
 
     if (payload.params.text.startsWith(config.PREFIX)) {
         if (payload.params.text === '$listnicks') {
-            client.privmsg(config.IRC_CHANNEL, `Discord users: ${Object.keys(members).join(',')}`);
+            client.privmsg(config.IRC_CHANNEL, `Discord users: ${Object.keys(members).join(', ')}`);
         }
     }
 
@@ -51,11 +51,11 @@ client.on("privmsg:channel", async (payload) => {
 
 client.on("ctcp_action", async (payload) => {
     await bot.helpers.sendMessage(CHANNEL_ID, {
-        content: `\* ${payload.source?.name || 'User'} ${ircMsgToDiscord(payload.params.text)}`
+        content: `*** * ${payload.source?.name || 'User'} ${ircMsgToDiscord(payload.params.text)}`
     })
 })
 
-client.on("raw:rpl_saslsuccess", async () => {
+client.once("raw:rpl_saslsuccess", async () => {
     await bot.helpers.sendMessage(CHANNEL_ID, {
         content: "Bridge connected to IRC and registered via SASL."
     })
@@ -117,9 +117,20 @@ client.on("names_reply", async (msg) => {
     await bot.helpers.sendMessage(CHANNEL_ID, { content });
 });
 
+const truncate = (str: string, n: number) => (str.length > n ? `${str.substring(0, n)}...` : str);
+
 bot.events.messageCreate = async (bot, msg) => {
     if (!msg.guildId || !msg.member) return;
     if (msg.channelId !== CHANNEL_ID) return;
+
+    let quoteContent = '';
+    if (msg.messageReference
+        && msg.messageReference.channelId === CHANNEL_ID
+        && msg.messageReference.messageId) {
+        const message = await bot.helpers
+            .getMessage(CHANNEL_ID.toString(), msg.messageReference.messageId.toString());
+        quoteContent = message.content;
+    }
 
     if (msg.member.id !== bot.id) {
         if (msg.content.startsWith(config.PREFIX)) {
@@ -129,7 +140,9 @@ bot.events.messageCreate = async (bot, msg) => {
         }
 
         const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
-        client.privmsg(config.IRC_CHANNEL, `<${member.user?.username || 'UnknownUser'}> ${await discordMsgToIrc(msg)}`);
+        let prelude = `<${member.user?.username || 'UnknownUser'}>`;
+        if (quoteContent) prelude += ` [> ${truncate(quoteContent, 20)}]`;
+        client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
     }
 }
 
