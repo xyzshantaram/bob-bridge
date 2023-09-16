@@ -62,8 +62,8 @@ client.on("connected", async () => {
     })
 })
 
-client.on("notice", (params) => {
-    console.log(`*** NOTICE ${params.source?.name}: ${params.params.text}`);
+client.on("raw", (payload) => {
+    console.log(payload.source?.name, payload.command, payload.params);
 })
 
 client.on("join", async (payload) => {
