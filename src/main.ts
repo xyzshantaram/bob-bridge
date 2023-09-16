@@ -55,12 +55,12 @@ client.on("ctcp_action", async (payload) => {
     })
 })
 
-client.on("connected", async () => {
-    console.log(client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD]));
+client.on("raw:rpl_saslsuccess", async () => {
     await bot.helpers.sendMessage(CHANNEL_ID, {
-        content: "Bridge connected to IRC."
+        content: "Bridge connected to IRC and registered via SASL."
     })
-})
+    client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD]);
+});
 
 client.on("raw", (payload) => {
     console.log(payload.source?.name, payload.command, payload.params);
