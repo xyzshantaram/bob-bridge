@@ -120,15 +120,20 @@ client.on("names_reply", async (msg) => {
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substring(0, n)}...` : str);
 
 bot.events.messageCreate = async (bot, msg) => {
+    let threadName = '';
     if (!msg.guildId || !msg.member) return;
-    if (msg.channelId !== CHANNEL_ID) return;
+    if (msg.channelId !== CHANNEL_ID) {
+        const id = msg.channelId;
+        const chan = await bot.helpers.getChannel(id);
+        if (chan.parentId !== CHANNEL_ID) return;
+        threadName = chan.name || 'Thread';
+    }
 
     let quoteContent = '';
     if (msg.messageReference
-        && msg.messageReference.channelId === CHANNEL_ID
         && msg.messageReference.messageId) {
         const message = await bot.helpers
-            .getMessage(CHANNEL_ID.toString(), msg.messageReference.messageId.toString());
+            .getMessage(msg.channelId, msg.messageReference.messageId.toString());
         quoteContent = message.content;
     }
 
@@ -142,6 +147,7 @@ bot.events.messageCreate = async (bot, msg) => {
         const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
         if (msg.content?.trim()) {
             let prelude = `<${member.user?.username || 'UnknownUser'}>`;
+            if (threadName) prelude += ` [in "${truncate(threadName, 10)}"]`;
             if (quoteContent) prelude += ` [> ${truncate(quoteContent, 20)}]`;
             client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
         }
