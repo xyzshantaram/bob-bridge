@@ -26,7 +26,7 @@ const ircMsgToDiscord = (text: string) => {
 
     return text.replace(/@((?:"[^"]+")|(?:[^"'\s]))+/g, (_, ...args) => {
         const member = members[args[2].slice(1).replace(/"(.+)"/, "$1")];
-        console.log(member);
+        console.log(member, args);
         if (!member) return `${args[2]}`;
         return `<@${member}>`;
     })
