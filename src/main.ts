@@ -146,11 +146,23 @@ bot.events.messageCreate = async (bot, msg) => {
             client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
         }
         if (msg.attachments) {
-            let timeout = 0;
-            msg.attachments.forEach(attachment => {
-                setTimeout(() => client.privmsg(config.IRC_CHANNEL, `${member.user?.username} sent ${attachment.url}`), timeout);
-                timeout += 400;
-            })
+            // send a maximum of 4 attachments to the channel.
+            const timeouts = [0, 500, 1000, 1500];
+            const fmt = (user: string, url: string) => `${user} sent ${url}`;
+            for (let i = 0; i < 4; i++) {
+                if (msg.attachments[i]) {
+                    setTimeout(() =>
+                        client.privmsg(config.IRC_CHANNEL, fmt(member.user?.username || "User", msg.attachments[i].url)),
+                        timeouts[i]);
+                }
+
+                if (i === 3 && msg.attachments.length > 4) {
+                    setTimeout(() =>
+                        client.privmsg(config.IRC_CHANNEL, `+ ${msg.attachments.length - 4} attachments`),
+                        1700
+                    )
+                }
+            }
         }
     }
 }
