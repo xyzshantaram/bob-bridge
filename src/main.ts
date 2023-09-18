@@ -24,9 +24,10 @@ const ircMsgToDiscord = (text: string) => {
     const boldRegex = /\x02(.+)\x02/g;
     const struckRegex = /\x1E(.+)\x1E/g;
 
-    return text.replace(/@([\._\d\w]+)/g, (_, ...args) => {
-        const member = members[args[0]];
-        if (!member) return '<ping>';
+    return text.replace(/@((?:"[^"]+")|(?:[^"'\s]))+/g, (_, ...args) => {
+        const member = members[args[2].slice(1).replace(/"(.+)"/, "$1")];
+        console.log(member);
+        if (!member) return `${args[2]}`;
         return `<@${member}>`;
     })
         .replace(italicRegex, '_$1_')
@@ -40,7 +41,9 @@ client.on("privmsg:channel", async (payload) => {
 
     if (payload.params.text.startsWith(config.PREFIX)) {
         if (payload.params.text === '$listnicks') {
-            client.privmsg(config.IRC_CHANNEL, `Discord users: ${Object.keys(members).join(', ')}`);
+            client.privmsg(config.IRC_CHANNEL, `Discord users: @${Object.keys(members).map(i =>
+                (i.includes(",") || i.includes(" ")) ? `"${i}"` : i
+            ).join(' @')}`);
         }
     }
 
@@ -117,7 +120,7 @@ client.on("names_reply", async (msg) => {
     await bot.helpers.sendMessage(CHANNEL_ID, { content });
 });
 
-const truncate = (str: string, n: number) => (str.length > n ? `${str.substring(0, n)}...` : str);
+const truncate = (str: string, n: number) => (str.length > n ? `${str.substring(0, n)}…` : str);
 
 bot.events.messageCreate = async (bot, msg) => {
     let threadName = '';
