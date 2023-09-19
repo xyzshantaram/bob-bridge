@@ -24,10 +24,10 @@ const ircMsgToDiscord = (text: string) => {
     const boldRegex = /\x02(.+)\x02/g;
     const struckRegex = /\x1E(.+)\x1E/g;
 
-    return text.replace(/@((?:"[^"]+")|(?:[^"'\s]))+/g, (_, ...args) => {
-        const member = members[args[2].slice(1).replace(/"(.+)"/, "$1")];
+    return text.replace(/@((?:"[\w\d ,+_\.]+")|(?:[\w\d,+_\.]+))/g, (match, ...args) => {
+        const member = members[match.slice(1).replace(/"(.+)"/, "$1")];
         console.log(member, args);
-        if (!member) return `${args[2]}`;
+        if (!member) return `${match}`;
         return `<@${member}>`;
     })
         .replace(italicRegex, '_$1_')
