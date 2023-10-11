@@ -113,6 +113,9 @@ const discordMsgToIrc = async (msg: Message) => {
         }
         return '@[Role](' + (roles.get(id)?.name || 'UnknownRole') + ')';
     })
+    .replace(/\*(.+?)\*/g, '\x1D$1\x1D')   
+    .replace(/\*\*(.+?)\*\*/g, '\x02$1\x02')
+    .replace(/~~(.+?)~~/g, '\x1E$1\x1E'); 
 }
 
 client.on("names_reply", async (msg) => {
