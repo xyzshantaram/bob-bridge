@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-control-regex
-import { Client } from "https://deno.land/x/irc@v0.13.0/mod.ts";
+import { Client } from "https://deno.land/x/irc@v0.14.0/mod.ts";
 import { createBot, Intents, Message, startBot } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
 import config from "../config.json" assert { type: 'json' };
 
@@ -15,6 +15,7 @@ const client = new Client({
     authMethod: "sasl",
     nick: config.IRC_USER,
     password: config.IRC_PASSWORD,
+    verbose: config.LOG_ALL_MESSAGES ? 'raw' : undefined
 })
 
 const ircMsgToDiscord = (text: string) => {
@@ -64,12 +65,6 @@ client.once("raw:rpl_saslsuccess", async () => {
     })
     client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD]);
 });
-
-client.on("raw", (payload) => {
-    if (config.LOG_ALL_MESSAGES) {
-        console.log(payload.source?.name, payload.command, payload.params);
-    }
-})
 
 client.on("join", async (payload) => {
     if (payload.source?.name === config.IRC_USER) {
