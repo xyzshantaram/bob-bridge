@@ -92,6 +92,13 @@ client.on("quit", async (payload) => {
     })
 })
 
+client.on("nick", async (payload) => {
+    if (payload.source?.name === config.IRC_USER) return;
+    await bot.helpers.sendMessage(CHANNEL_ID, {
+        content: `*** ${payload.source?.name || "Someone"} is now known as ${payload.params.nick}`
+    })
+})
+
 const discordMsgToIrc = async (msg: Message) => {
     const floodSafe = msg.content.split('\n').join(' / ');
     const channels = await Promise.all(
