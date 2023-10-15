@@ -81,7 +81,14 @@ client.on("join", async (payload) => {
 client.on("part", async (payload) => {
     if (payload.source?.name === config.IRC_USER) return;
     await bot.helpers.sendMessage(CHANNEL_ID, {
-        content: `*** ${payload.source?.name || "Someone"} has left`
+        content: `*** ${payload.source?.name || "Someone"} has left the channel [${payload.params.comment || 'No part message'}]`
+    })
+})
+
+client.on("quit", async (payload) => {
+    if (payload.source?.name === config.IRC_USER) return;
+    await bot.helpers.sendMessage(CHANNEL_ID, {
+        content: `*** ${payload.source?.name || "Someone"} quit [${payload.params.comment || 'No quit message'}]`
     })
 })
 
@@ -108,9 +115,9 @@ const discordMsgToIrc = async (msg: Message) => {
         }
         return '@[Role](' + (roles.get(id)?.name || 'UnknownRole') + ')';
     })
-    .replace(/\*(.+?)\*/g, '\x1D$1\x1D')   
-    .replace(/\*\*(.+?)\*\*/g, '\x02$1\x02')
-    .replace(/~~(.+?)~~/g, '\x1E$1\x1E'); 
+        .replace(/\*(.+?)\*/g, '\x1D$1\x1D')
+        .replace(/\*\*(.+?)\*\*/g, '\x02$1\x02')
+        .replace(/~~(.+?)~~/g, '\x1E$1\x1E');
 }
 
 client.on("names_reply", async (msg) => {
