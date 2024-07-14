@@ -1,7 +1,8 @@
 // deno-lint-ignore-file no-control-regex
 import { Client } from "https://deno.land/x/irc@v0.14.0/mod.ts";
 import { createBot, Intents, Message, startBot } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
-import config from "../config.json" assert { type: 'json' };
+import config from "../config.json" with { type: 'json' };
+import { LRUCache } from "npm:lru-cache@11.0.0";
 
 const CHANNEL_ID = BigInt(config.DISCORD_BRIDGE_CHANNEL);
 const GUILD_ID = BigInt(config.DISCORD_BRIDGE_SERVER);
@@ -133,6 +134,10 @@ client.on("names_reply", async (msg) => {
 });
 
 const truncate = (str: string, n: number) => (str.length > n ? `${str.substring(0, n)}…` : str);
+const getQuoteStr = (str: string) => ` [> ${truncate(str, 25)}]`;
+const getThreadStr = (str: string) => ` [in ${truncate(str, 15)}]`;
+
+const cache = new LRUCache<bigint, Message>({ max: 1000 });
 
 bot.events.messageCreate = async (bot, msg) => {
     let threadName = '';
@@ -143,6 +148,8 @@ bot.events.messageCreate = async (bot, msg) => {
         if (chan.parentId !== CHANNEL_ID) return;
         threadName = chan.name || 'Thread';
     }
+
+    cache.set(msg.id, msg);
 
     let quoteContent = '';
     if (msg.messageReference
@@ -162,30 +169,31 @@ bot.events.messageCreate = async (bot, msg) => {
         const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
         if (msg.content?.trim()) {
             let prelude = `<${member.user?.username || 'UnknownUser'}>`;
-            if (threadName) prelude += ` [in "${truncate(threadName, 10)}"]`;
-            if (quoteContent) prelude += ` [> ${truncate(quoteContent, 20)}]`;
+            if (threadName) prelude += getThreadStr(threadName);
+            if (quoteContent) prelude += getQuoteStr(quoteContent);
             client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
         }
         if (msg.attachments) {
-            // send a maximum of 4 attachments to the channel.
-            const timeouts = [0, 500, 1000, 1500];
+            let timeout = 0;
             const fmt = (user: string, url: string) => `${user} sent ${url}`;
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < msg.attachments.length; i++) {
                 if (msg.attachments[i]) {
                     setTimeout(() =>
                         client.privmsg(config.IRC_CHANNEL, fmt(member.user?.username || "User", msg.attachments[i].url)),
-                        timeouts[i]);
-                }
-
-                if (i === 3 && msg.attachments.length > 4) {
-                    setTimeout(() =>
-                        client.privmsg(config.IRC_CHANNEL, `+ ${msg.attachments.length - 4} attachments`),
-                        1700
-                    )
+                        (timeout += 500));
                 }
             }
         }
     }
+}
+
+bot.events.messageUpdate = async (bot, msg) => {
+    if (!msg.guildId || !msg.member) return;
+    const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
+    const oldMsg = cache.get(msg.id);
+    if (!oldMsg) return;
+    client.privmsg(config.IRC_CHANNEL, `*** ${member.user?.username || 'UnknownUser'} edited: ${getQuoteStr(oldMsg.content)} to \`${discordMsgToIrc(msg)}\``);
+    cache.set(msg.id, msg);
 }
 
 bot.events.ready = async (bot, _) => {
@@ -203,9 +211,7 @@ console.log('running');
 
 Deno.addSignalListener('SIGINT', async () => {
     const content = "Goodbye, cruel world! (jk, caught a SIGINT, bbl)"
-    await bot.helpers.sendMessage(CHANNEL_ID, {
-        content
-    })
+    await bot.helpers.sendMessage(CHANNEL_ID, { content });
 
     client.privmsg(config.IRC_CHANNEL, content);
     Deno.exit(0);
