@@ -192,7 +192,7 @@ bot.events.messageUpdate = async (bot, msg) => {
     const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
     const oldMsg = cache.get(msg.id);
     if (!oldMsg) return;
-    client.privmsg(config.IRC_CHANNEL, `*** ${member.user?.username || 'UnknownUser'} edited: ${getQuoteStr(oldMsg.content)} to \`${discordMsgToIrc(msg)}\``);
+    client.privmsg(config.IRC_CHANNEL, `*** ${member.user?.username || 'UnknownUser'} edited: ${getQuoteStr(oldMsg.content)} to \`${await discordMsgToIrc(msg)}\``);
     cache.set(msg.id, msg);
 }
 
