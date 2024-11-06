@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-control-regex
-import { Client } from "https://deno.land/x/irc@v0.14.0/mod.ts";
+import { Client } from "jsr:@irc/client@0.17.2";
 import { createBot, Intents, Message, startBot } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
 import config from "../config.json" with { type: 'json' };
 import { LRUCache } from "npm:lru-cache@11.0.0";
@@ -139,6 +139,16 @@ const getThreadStr = (str: string) => ` [in ${truncate(str, 15)}]`;
 
 const cache = new LRUCache<bigint, Message>({ max: 1000 });
 
+function chunk(str: string, chunkSize: number = 440): string[] {
+    const chunks: string[] = [];
+    for (let i = 0; i < str.length; i += chunkSize) {
+        chunks.push(str.slice(i, i + chunkSize));
+    }
+    return chunks;
+}
+
+const delay = (duration: number) => new Promise(resolve => setTimeout(resolve, duration));
+
 bot.events.messageCreate = async (bot, msg) => {
     let threadName = '';
     if (!msg.guildId || !msg.member) return;
@@ -171,16 +181,18 @@ bot.events.messageCreate = async (bot, msg) => {
             let prelude = `<${member.user?.username || 'UnknownUser'}>`;
             if (threadName) prelude += getThreadStr(threadName);
             if (quoteContent) prelude += getQuoteStr(quoteContent);
-            client.privmsg(config.IRC_CHANNEL, `${prelude} ${await discordMsgToIrc(msg)}`);
+            const content = `${prelude} ${await discordMsgToIrc(msg)}`;
+            for (const piece of chunk(content, 400)) {
+                client.privmsg(config.IRC_CHANNEL, piece);
+                await delay(250);
+            }
         }
         if (msg.attachments) {
-            let timeout = 0;
             const fmt = (user: string, url: string) => `${user} sent ${url}`;
             for (let i = 0; i < msg.attachments.length; i++) {
                 if (msg.attachments[i]) {
-                    setTimeout(() =>
-                        client.privmsg(config.IRC_CHANNEL, fmt(member.user?.username || "User", msg.attachments[i].url)),
-                        (timeout += 500));
+                    client.privmsg(config.IRC_CHANNEL, fmt(member.user?.username || "User", msg.attachments[i].url))
+                    await delay(500);
                 }
             }
         }
