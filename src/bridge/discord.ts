@@ -28,9 +28,16 @@ export function registerDiscordHandlers(runtime: BridgeRuntime) {
 
     if (msg.member.id !== bot.id) {
       if (msg.content.startsWith(config.PREFIX)) {
-        if (msg.content === config.PREFIX + "listnicks") {
+        const cmd = msg.content.slice(config.PREFIX.length);
+        if (cmd === "listnicks") {
           client.names(config.IRC_CHANNEL);
+        } else if (cmd === "ping") {
+          await bot.helpers.sendMessage(msg.channelId, { content: "Pong!" });
         }
+      } else if (msg.content === "test") {
+        await bot.helpers.sendMessage(msg.channelId, {
+          content: "Test successful!",
+        });
       }
 
       const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
