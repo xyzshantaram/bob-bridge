@@ -23,15 +23,25 @@ export function createRuntime(config: BridgeConfig): BridgeRuntime {
   const bot = createBot({
     token: config.DISCORD_TOKEN,
     intents: Intents.GuildMessages | Intents.Guilds | Intents.MessageContent |
-      Intents.GuildMembers,
+      Intents.GuildMembers | Intents.GuildMessageReactions,
   });
 
-  const client = new Client({
-    authMethod: "sasl",
+  const clientOptions = {
     nick: config.IRC_USER,
-    password: config.IRC_PASSWORD,
     verbose: config.LOG_ALL_MESSAGES ? "raw" : undefined,
-  });
+  } as {
+    authMethod?: "sasl";
+    nick: string;
+    password?: string;
+    verbose?: "raw";
+  };
+
+  if (config.IRC_PASSWORD) {
+    clientOptions.authMethod = "sasl";
+    clientOptions.password = config.IRC_PASSWORD;
+  }
+
+  const client = new Client(clientOptions);
 
   return {
     config,

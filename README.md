@@ -8,11 +8,16 @@ Architecture and source walkthrough:
 
 ## Run
 
-`deno run --allow-net --allow-read --unstable src/app/main.ts`
+`deno run --allow-net --allow-read --allow-import src/app/main.ts`
 
 or
 
 `deno task run`
+
+`IRC_PASSWORD` may be left empty to connect without SASL/NickServ
+authentication. `DISCORD_TOKEN` still needs to be a real bot token. The
+`--allow-import` flag is required because a transitive `discordeno` dependency
+loads code from `unpkg.com`.
 
 ## Validate
 

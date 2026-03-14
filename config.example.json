@@ -3,7 +3,7 @@
   "DISCORD_BRIDGE_SERVER": "123456789012345678",
   "DISCORD_TOKEN": "your-discord-bot-token",
   "IRC_USER": "BobBridgeBot",
-  "IRC_PASSWORD": "your-irc-password",
+  "IRC_PASSWORD": "",
   "LOG_ALL_MESSAGES": false,
   "IRC_CHANNEL": "#your-channel",
   "PREFIX": "$",

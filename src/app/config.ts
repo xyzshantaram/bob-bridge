@@ -3,7 +3,7 @@ export type BridgeConfig = {
   DISCORD_BRIDGE_SERVER: string;
   DISCORD_TOKEN: string;
   IRC_USER: string;
-  IRC_PASSWORD: string;
+  IRC_PASSWORD?: string;
   LOG_ALL_MESSAGES?: boolean;
   IRC_CHANNEL: string;
   PREFIX: string;
@@ -80,7 +80,7 @@ export function parseConfig(raw: RawConfig): BridgeConfig {
     DISCORD_BRIDGE_SERVER: expectSnowflakeString(raw, "DISCORD_BRIDGE_SERVER"),
     DISCORD_TOKEN: expectString(raw, "DISCORD_TOKEN"),
     IRC_USER: expectString(raw, "IRC_USER"),
-    IRC_PASSWORD: expectString(raw, "IRC_PASSWORD"),
+    IRC_PASSWORD: expectString(raw, "IRC_PASSWORD", { optional: true }),
     LOG_ALL_MESSAGES: expectBoolean(raw, "LOG_ALL_MESSAGES", false),
     IRC_CHANNEL: expectString(raw, "IRC_CHANNEL"),
     PREFIX: expectString(raw, "PREFIX"),
@@ -93,7 +93,7 @@ export function parseConfig(raw: RawConfig): BridgeConfig {
 }
 
 export async function loadConfig(): Promise<BridgeConfig> {
-  const configUrl = new URL("../config.json", import.meta.url);
+  const configUrl = new URL("../../config.json", import.meta.url);
   const configText = await Deno.readTextFile(configUrl);
   return parseConfig(JSON.parse(configText) as RawConfig);
 }

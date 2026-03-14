@@ -11,12 +11,14 @@ changes, and `deno.lock` pins external dependencies. A local `config.json` is
 required at the repo root for tokens, channel IDs, and IRC settings, but it
 should not be committed. `config.example.json` provides a safe template, and
 `docs/ARCHITECTURE.md` is the main source walkthrough for new contributors.
+`IRC_PASSWORD` may be left empty when connecting to IRC without SASL/NickServ
+authentication.
 
 ## Build, Test, and Development Commands
 
 Use Deno directly; there is no `package.json` or Makefile in this repo.
 
-- `deno run --allow-net --allow-read --unstable src/app/main.ts` starts the
+- `deno run --allow-net --allow-read --allow-import src/app/main.ts` starts the
   bridge locally.
 - `deno task run` starts the bridge using the committed Deno task config.
 - `cp config.example.json config.json` creates a starting config file with

@@ -66,3 +66,15 @@ Deno.test("parseConfig accepts optional IRC_CHANNEL_PASSWORD when present", () =
     },
   );
 });
+
+Deno.test("parseConfig allows IRC_PASSWORD to be omitted", () => {
+  assertEquals(
+    parseConfig({ ...validConfig, IRC_PASSWORD: "" }),
+    {
+      ...validConfig,
+      IRC_PASSWORD: undefined,
+      IRC_CHANNEL_PASSWORD: undefined,
+      LOG_ALL_MESSAGES: false,
+    },
+  );
+});

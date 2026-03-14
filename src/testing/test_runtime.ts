@@ -6,6 +6,7 @@ export function createTestRuntime() {
   const ircMessages: string[] = [];
   const sentDiscordMessages: Array<{ channelId: bigint; content: string }> = [];
   const namesRequests: string[] = [];
+  const joinRequests: string[][] = [];
   const clientHandlers: Record<
     string,
     (...args: unknown[]) => Promise<void> | void
@@ -63,7 +64,9 @@ export function createTestRuntime() {
     names: (channel: string) => {
       namesRequests.push(channel);
     },
-    join: () => undefined,
+    join: (channels: string[]) => {
+      joinRequests.push(channels);
+    },
     connect: () => Promise.resolve(),
     on: (
       event: string,
@@ -94,6 +97,7 @@ export function createTestRuntime() {
     ircMessages,
     sentDiscordMessages,
     namesRequests,
+    joinRequests,
     clientHandlers,
     clientOnceHandlers,
   };

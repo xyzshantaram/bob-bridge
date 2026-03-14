@@ -48,3 +48,24 @@ Deno.test("irc integration names reply is relayed to Discord", async () => {
     content: "Users in **#bridge**: alice, bob",
   }]);
 });
+
+Deno.test("irc integration joins channel after plain registration", async () => {
+  const { runtime, clientHandlers, joinRequests } = createTestRuntime();
+  registerIrcHandlers(runtime);
+
+  const handler = clientHandlers["register"];
+  await handler({});
+
+  assertEquals(joinRequests, [["#bridge", ""]]);
+});
+
+Deno.test("irc integration joins channel after SASL success only once", async () => {
+  const { runtime, clientHandlers, clientOnceHandlers, joinRequests } =
+    createTestRuntime();
+  registerIrcHandlers(runtime);
+
+  await clientOnceHandlers["raw:rpl_saslsuccess"]({});
+  await clientHandlers["register"]({});
+
+  assertEquals(joinRequests, [["#bridge", ""]]);
+});

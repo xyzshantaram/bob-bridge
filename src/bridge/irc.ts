@@ -3,6 +3,13 @@ import type { BridgeRuntime } from "../app/runtime.ts";
 
 export function registerIrcHandlers(runtime: BridgeRuntime) {
   const { bot, channelId, client, config, members } = runtime;
+  let joined = false;
+
+  const joinBridgeChannel = () => {
+    if (joined) return;
+    joined = true;
+    client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD || ""]);
+  };
 
   client.on("privmsg:channel", async (payload) => {
     if (payload.source?.name === config.IRC_USER) return;
@@ -40,7 +47,11 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     await bot.helpers.sendMessage(channelId, {
       content: "Bridge connected to IRC and registered via SASL.",
     });
-    client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD || ""]);
+    joinBridgeChannel();
+  });
+
+  client.on("register", () => {
+    joinBridgeChannel();
   });
 
   client.on("join", async (payload) => {
