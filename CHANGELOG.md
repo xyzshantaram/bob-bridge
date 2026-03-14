@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to date-based versioning - and yes, I just made this term up.
 
+## Added 20260315
+
+- Added `$ping` command that responds with "Pong!" (usable from both IRC and
+  Discord).
+- Fixed multiline messages so blank lines no longer appear as "/ /" separators.
+- Newlines in quoted messages now get properly escaped.
+- IRC connection message now shows "Joining {channel}..." to indicate
+  initialization.
+- Add proper types for event payloads.
+
 ## Added 20260314
 
 - Discord reactions are now relayed to IRC.

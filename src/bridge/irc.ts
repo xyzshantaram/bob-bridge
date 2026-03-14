@@ -1,5 +1,14 @@
 import { ircMsgToDiscord } from "./relay.ts";
 import type { BridgeRuntime } from "../app/runtime.ts";
+import {
+  CtcpActionEvent,
+  JoinEvent,
+  NamesEvent,
+  NickEvent,
+  PartEvent,
+  PrivMsgChannelEvent,
+  QuitEvent,
+} from "./utils.ts";
 
 export function registerIrcHandlers(runtime: BridgeRuntime) {
   const { bot, channelId, client, config, members } = runtime;
@@ -11,7 +20,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     client.join([config.IRC_CHANNEL, config.IRC_CHANNEL_PASSWORD || ""]);
   };
 
-  client.on("privmsg:channel", async (payload) => {
+  client.on("privmsg:channel", async (payload: PrivMsgChannelEvent) => {
     if (payload.source?.name === config.IRC_USER) return;
     if (payload.params.target !== config.IRC_CHANNEL) return;
 
@@ -35,7 +44,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     });
   });
 
-  client.on("ctcp_action", async (payload) => {
+  client.on("ctcp_action", async (payload: CtcpActionEvent) => {
     await bot.helpers.sendMessage(channelId, {
       content: `*** * ${payload.source?.name || "User"} ${
         ircMsgToDiscord(runtime, payload.params.text)
@@ -45,7 +54,8 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
 
   client.once("raw:rpl_saslsuccess", async () => {
     await bot.helpers.sendMessage(channelId, {
-      content: "Bridge connected to IRC and registered via SASL.",
+      content:
+        `Bridge connected to IRC and registered via SASL. Joining ${config.IRC_CHANNEL}...`,
     });
     joinBridgeChannel();
   });
@@ -54,7 +64,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     joinBridgeChannel();
   });
 
-  client.on("join", async (payload) => {
+  client.on("join", async (payload: JoinEvent) => {
     if (payload.source?.name === config.IRC_USER) {
       return await bot.helpers.sendMessage(channelId, {
         content: `*** Bridge joined ${config.IRC_CHANNEL}`,
@@ -66,7 +76,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     });
   });
 
-  client.on("part", async (payload) => {
+  client.on("part", async (payload: PartEvent) => {
     if (payload.source?.name === config.IRC_USER) return;
     await bot.helpers.sendMessage(channelId, {
       content: `*** ${
@@ -75,7 +85,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     });
   });
 
-  client.on("quit", async (payload) => {
+  client.on("quit", async (payload: QuitEvent) => {
     if (payload.source?.name === config.IRC_USER) return;
     await bot.helpers.sendMessage(channelId, {
       content: `*** ${payload.source?.name || "Someone"} quit [${
@@ -84,7 +94,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     });
   });
 
-  client.on("nick", async (payload) => {
+  client.on("nick", async (payload: NickEvent) => {
     if (payload.source?.name === config.IRC_USER) return;
     await bot.helpers.sendMessage(channelId, {
       content: `*** ${
@@ -93,7 +103,7 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
     });
   });
 
-  client.on("names_reply", async (msg) => {
+  client.on("names_reply", async (msg: NamesEvent) => {
     const content = `Users in **${msg.params.channel}**: ${
       Object.keys(msg.params.names).join(", ")
     }`;
