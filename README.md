@@ -2,13 +2,29 @@
 
 A simple Discord&lt;--&gt;IRC bridge designed for use in Burned Out Bastards.
 
-Architecture and source walkthrough:
+## Structure
 
-- `docs/ARCHITECTURE.md`
+```text
+.
+├── config.example.json
+├── src
+│   ├── main.ts
+│   ├── app
+│   │   └── runtime.ts
+│   └── bridge
+│       ├── index.ts
+│       ├── discord.ts
+│       ├── irc.ts
+│       ├── relay.ts
+│       ├── resolver.ts
+│       ├── transforms.ts
+│       └── formatting.ts
+└── deno.json
+```
 
 ## Run
 
-`deno run --allow-net --allow-read --allow-import src/app/main.ts`
+`deno run --allow-net --allow-read --allow-import src/main.ts`
 
 or
 
@@ -21,7 +37,6 @@ loads code from `unpkg.com`.
 
 ## Validate
 
-- `deno lint src/app src/bridge src/testing`
-- `deno check --allow-import src/app/main.ts src/bridge/index.ts`
-- `deno test --allow-import src/testing`
+- `deno lint src src/bridge`
+- `deno check --allow-import src/main.ts src/bridge/index.ts`
 - `deno task validate`

@@ -1,11 +1,20 @@
-import { Client } from "jsr:@irc/client@0.17.2";
-import {
-  createBot,
-  Intents,
-  type Message,
-} from "https://deno.land/x/discordeno@18.0.1/mod.ts";
-import { LRUCache } from "npm:lru-cache@11.0.0";
-import type { BridgeConfig } from "./config.ts";
+import { Client } from "@irc/client";
+import { createBot, Intents, type Message } from "@discordeno";
+import { LRUCache } from "lru-cache";
+
+export type BridgeConfig = {
+  DISCORD_BRIDGE_CHANNEL: string;
+  DISCORD_BRIDGE_SERVER: string;
+  DISCORD_TOKEN: string;
+  IRC_USER: string;
+  IRC_PASSWORD?: string;
+  LOG_ALL_MESSAGES?: boolean;
+  IRC_CHANNEL: string;
+  PREFIX: string;
+  IRC_CHANNEL_PASSWORD?: string;
+  IRC_SERVER: string;
+  IRC_PORT: number;
+};
 
 export type BridgeBot = ReturnType<typeof createBot>;
 

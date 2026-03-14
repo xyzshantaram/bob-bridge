@@ -1,4 +1,4 @@
-import type { BridgeConfig } from "../app/config.ts";
+import type { BridgeConfig } from "../app/runtime.ts";
 import { registerDiscordHandlers, startDiscord } from "./discord.ts";
 import { registerIrcHandlers, startIrc } from "./irc.ts";
 import { createRuntime } from "../app/runtime.ts";

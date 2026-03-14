@@ -87,6 +87,6 @@ export const getDiscordMediaLines = (
 export const getReactionLabel = (
   emoji: { id?: bigint | null; name?: string | null },
 ) => {
-  if (emoji.id && emoji.name) return `:${emoji.name}:`;
+  if (emoji.name) return emoji.name;
   return emoji.name || "an emoji";
 };

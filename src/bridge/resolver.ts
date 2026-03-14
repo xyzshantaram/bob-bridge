@@ -1,4 +1,4 @@
-import type { Message } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
+import type { Message } from "@discordeno";
 import type { BridgeRuntime } from "../app/runtime.ts";
 import { discordTextToIrc } from "./transforms.ts";
 

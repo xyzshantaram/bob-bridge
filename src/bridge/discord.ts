@@ -1,4 +1,4 @@
-import { startBot } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
+import { startBot } from "@discordeno";
 import { getQuoteStr } from "./formatting.ts";
 import {
   discordMsgToIrc,

@@ -10,11 +10,11 @@ project adheres to date-based versioning - and yes, I just made this term up.
 - Discord reactions are now relayed to IRC.
 - Discord attachments, embeds, and stickers are now summarized when relayed to
   IRC.
-- `config.json` is now validated on load with clearer startup errors.
-- The source tree has been reorganized into `src/app`, `src/bridge`, and
-  `src/testing`.
-- A committed unit and integration-style Deno test suite now covers formatting,
-  transforms, config parsing, resolver behavior, and Discord/IRC handler wiring.
+- Custom Discord reactions now relay by name, while Unicode reactions relay as
+  their Unicode emoji.
+- The source tree has been reorganized around a smaller `src/main.ts` entrypoint
+  plus `src/app` and `src/bridge` modules.
+- A sample `config.example.json` is now included for local setup.
 
 ## Added 20241106
 

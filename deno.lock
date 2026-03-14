@@ -502,5 +502,11 @@
     "https://deno.land/x/irc@v0.14.0/plugins/whois.ts": "b40847d8e0facde949648506b5e747279e81d53187eedbdf6d60a28fe57c4c64",
     "https://unpkg.com/@evan/wasm@0.0.93/target/ed25519/deno.js": "9728126890f17b71cee41afdab8a4bc362f6b9f409fe0a5c4f6ca9f3b510fd3a",
     "https://unpkg.com/@evan/wasm@0.0.94/target/zlib/deno.js": "e65131e1c1f45e64960f2699a0b868927ea5c9201c4b986a7cfc57b18be5cc09"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@irc/client@0.17.2",
+      "npm:lru-cache@11.0.0"
+    ]
   }
 }
