@@ -3,8 +3,13 @@ export const truncate = (
   n: number,
 ) => (str.length > n ? `${str.substring(0, n)}…` : str);
 
-export const getQuoteStr = (str: string) => ` [> ${truncate(str, 25)}]`;
-export const getThreadStr = (str: string) => ` [in ${truncate(str, 15)}]`;
+const truncateNewlineSafe = (str: string, n: number) =>
+  truncate(str.replace(/\n/g, " "), n);
+
+export const getQuoteStr = (str: string) =>
+  ` [> ${truncateNewlineSafe(str, 25)}]`;
+export const getThreadStr = (str: string) =>
+  ` [in ${truncateNewlineSafe(str, 15)}]`;
 
 export function chunk(str: string, chunkSize: number = 440): string[] {
   const chunks: string[] = [];
