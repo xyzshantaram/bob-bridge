@@ -34,6 +34,8 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
             ).join(" @")
           }`,
         );
+      } else if (payload.params.text === "$ping") {
+        client.privmsg(config.IRC_CHANNEL, "Pong!");
       }
     }
 

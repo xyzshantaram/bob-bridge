@@ -34,10 +34,6 @@ export function registerDiscordHandlers(runtime: BridgeRuntime) {
         } else if (cmd === "ping") {
           await bot.helpers.sendMessage(msg.channelId, { content: "Pong!" });
         }
-      } else if (msg.content === "test") {
-        await bot.helpers.sendMessage(msg.channelId, {
-          content: "Test successful!",
-        });
       }
 
       const member = await bot.helpers.getMember(msg.guildId, msg.member.id);
