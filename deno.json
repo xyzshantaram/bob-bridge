@@ -1,0 +1,14 @@
+{
+  "imports": {
+    "@discordeno": "https://deno.land/x/discordeno@18.0.1/mod.ts",
+    "@irc/client": "jsr:@irc/client@0.17.2",
+    "lru-cache": "npm:lru-cache@11.0.0"
+  },
+  "tasks": {
+    "run": "deno run --allow-net --allow-read --allow-import src/main.ts",
+    "fmt": "deno fmt src README.md CHANGELOG.md",
+    "lint": "deno lint src",
+    "check": "deno check --allow-import src/main.ts src/bridge/index.ts",
+    "validate": "deno fmt --check src README.md CHANGELOG.md && deno lint src && deno check --allow-import src/main.ts src/bridge/index.ts"
+  }
+}
