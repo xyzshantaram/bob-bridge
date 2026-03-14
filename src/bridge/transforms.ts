@@ -32,7 +32,8 @@ export function discordTextToIrc(
   content: string,
   context: DiscordMentionContext,
 ) {
-  const floodSafe = content.split("\n").join(" / ");
+  const lines = content.split("\n").filter((line) => line.trim() !== "");
+  const floodSafe = lines.join(" / ");
   let channelCount = 0;
   let userCount = 0;
 
