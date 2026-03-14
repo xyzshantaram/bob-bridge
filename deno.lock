@@ -1,5 +1,31 @@
 {
-  "version": "2",
+  "version": "5",
+  "specifiers": {
+    "jsr:@henrygd/queue@^1.0.6": "1.2.0",
+    "jsr:@irc/client@0.17.2": "0.17.2",
+    "jsr:@std/fmt@^1.0.2": "1.0.9",
+    "npm:lru-cache@11.0.0": "11.0.0"
+  },
+  "jsr": {
+    "@henrygd/queue@1.2.0": {
+      "integrity": "3e6c968f9bd56e3e7dfbd9952d0b7173a4ecdb7d4df041b3a0f4dfc896efeede"
+    },
+    "@irc/client@0.17.2": {
+      "integrity": "9448e583f718d7e5af9ac387ffddcac5d953785499754d52360623bd35034cd5",
+      "dependencies": [
+        "jsr:@henrygd/queue",
+        "jsr:@std/fmt"
+      ]
+    },
+    "@std/fmt@1.0.9": {
+      "integrity": "2487343e8899fb2be5d0e3d35013e54477ada198854e52dd05ed0422eddcabe0"
+    }
+  },
+  "npm": {
+    "lru-cache@11.0.0": {
+      "integrity": "sha512-Qv32eSV1RSCfhY3fpPE2GNZ8jgM9X7rdAfemLWqTUxwiyIC4jJ6Sy0fZ8H+oLWevO6i4/bizg7c8d8i6bxrzbA=="
+    }
+  },
   "remote": {
     "https://deno.land/std@0.203.0/assert/_constants.ts": "8a9da298c26750b28b326b297316cdde860bc237533b07e1337c021379e6b2a9",
     "https://deno.land/std@0.203.0/assert/_diff.ts": "1a3c044aedf77647d6cac86b798c6417603361b66b54c53331b312caeb447aea",

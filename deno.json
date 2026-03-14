@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "run": "deno run --allow-net --allow-read --unstable src/app/main.ts",
+    "fmt": "deno fmt src/app src/bridge src/testing AGENTS.md README.md docs/ARCHITECTURE.md CHANGELOG.md",
+    "lint": "deno lint src/app src/bridge src/testing",
+    "check": "deno check --allow-import src/app/main.ts src/bridge/index.ts",
+    "test": "deno test --allow-import src/testing",
+    "validate": "deno fmt --check src/app src/bridge src/testing AGENTS.md README.md docs/ARCHITECTURE.md CHANGELOG.md && deno lint src/app src/bridge src/testing && deno check --allow-import src/app/main.ts src/bridge/index.ts && deno test --allow-import src/testing"
+  }
+}
