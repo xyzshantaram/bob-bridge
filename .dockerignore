@@ -1,0 +1,10 @@
+.git
+.gitignore
+.vscode
+Dockerfile
+.dockerignore
+config.json
+config.example.json
+README.md
+CHANGELOG.md
+.env
