@@ -18,4 +18,4 @@ RUN deno cache --allow-import src/main.ts
 
 USER deno
 
-CMD ["run", "--allow-net", "--allow-read", "--allow-import", "src/main.ts"]
+CMD ["run", "--allow-net", "--allow-read", "--allow-import", "--allow-env", "src/main.ts"]
