@@ -1,4 +1,4 @@
-FROM denoland/deno:2.0-alpine AS builder
+FROM denoland/deno:alpine-2.7.14 AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY src/ ./src/
 
 RUN deno cache src/main.ts
 
-FROM denoland/deno:2.0-alpine
+FROM denoland/deno:alpine-2.7.14
 
 WORKDIR /app
 
