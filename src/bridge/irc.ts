@@ -9,6 +9,10 @@ import {
   PrivMsgChannelEvent,
   QuitEvent,
 } from "./utils.ts";
+import {
+  resolveBridgedDiscordThreads,
+  resolveDiscordTargetFromIrc,
+} from "./resolver.ts";
 
 export function registerIrcHandlers(runtime: BridgeRuntime) {
   const { bot, channelId, client, config, members } = runtime;
@@ -34,22 +38,46 @@ export function registerIrcHandlers(runtime: BridgeRuntime) {
             ).join(" @")
           }`,
         );
+        return;
+      } else if (payload.params.text === "$threads") {
+        const threads = await resolveBridgedDiscordThreads(runtime);
+        const threadNames = threads.map((thread) => thread.name).filter(
+          Boolean,
+        );
+        client.privmsg(
+          config.IRC_CHANNEL,
+          threadNames.length > 0
+            ? `Discord threads: ${threadNames.join(", ")}`
+            : "Discord threads: none",
+        );
+        return;
       } else if (payload.params.text === "$ping") {
         client.privmsg(config.IRC_CHANNEL, "Pong!");
+        return;
       }
     }
 
-    await bot.helpers.sendMessage(channelId, {
+    const target = await resolveDiscordTargetFromIrc(
+      runtime,
+      payload.params.text,
+    );
+
+    await bot.helpers.sendMessage(target.channelId, {
       content: `<${payload.source?.name || "User"}> ${
-        ircMsgToDiscord(runtime, payload.params.text)
+        ircMsgToDiscord(runtime, target.text)
       }`,
     });
   });
 
   client.on("ctcp_action", async (payload: CtcpActionEvent) => {
-    await bot.helpers.sendMessage(channelId, {
+    const target = await resolveDiscordTargetFromIrc(
+      runtime,
+      payload.params.text,
+    );
+
+    await bot.helpers.sendMessage(target.channelId, {
       content: `*** * ${payload.source?.name || "User"} ${
-        ircMsgToDiscord(runtime, payload.params.text)
+        ircMsgToDiscord(runtime, target.text)
       }`,
     });
   });
